@@ -4,12 +4,23 @@ from tqdm import tqdm
 import os
 import re
 
-# makes = ['honda', 'nissan', 'suzuki', 'micro', 'mitsubishi', 'mahindra', 'mazda', 'daihatsu', 'hyundai', 'kia', 'bmw', 'perodua', 'tata']
-# # makes = ['honda','micro']
-
-file_path = os.path.join('scrape_data',"v02",f'extracted_table_data.csv')
+file_path = os.path.join('extracted_table_data.csv')
 
 dataset = pd.read_csv(file_path)
+
+dataset.rename(columns={
+    'Date': 'date_posted',
+    'Contact': 'contact_info',
+    'Price': 'vehicle_price',
+    'Make': 'brand',
+    'Model': 'model',
+    'YOM': 'year',
+    'Mileage (km)': 'mileage_km',
+    'Gear': 'transmission',
+    'Fuel Type': 'fuel_type',
+    'Options': 'options',
+    'Engine (cc):': 'engine_cc'
+}, inplace=True)
 
 # Remove records with 'Negotiable' value in the 'Price' column
 dataset = dataset[dataset['vehicle_price'] != 'Negotiable']
@@ -27,9 +38,8 @@ dataset = dataset.dropna(subset=['vehicle_price'])
 # Convert the 'Model' column to uppercase
 dataset['model'] = dataset['model'].str.upper()
 dataset['brand'] = dataset['brand'].str.upper()
-dataset['Transmission'] = dataset['Transmission'].str.upper()
+dataset['transmission'] = dataset['transmission'].str.upper()
 dataset['fuel_type'] = dataset['fuel_type'].str.upper()
 
-output_file_path = os.path.join('transformed_data',"V02",f'transformed_table_data.csv')
-
+output_file_path = os.path.join('transformed_table_data.csv')
 dataset.to_csv(output_file_path, index=False)

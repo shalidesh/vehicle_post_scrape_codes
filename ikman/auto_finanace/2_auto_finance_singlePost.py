@@ -6,9 +6,12 @@ import time
 import re
 import csv
 import os
+from datetime import datetime, timedelta
 
-path=os.path.join("data","2025-06-05","auto_finance_post_links.csv")
-path_postdata=os.path.join("data","2025-06-05","auto_finance_post_data.csv")
+path=os.path.join("ikman_auto_finance_post_links_2025-11-20_14-09.csv")
+
+timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M')  # e.g., '2025-11-20_13-52'
+path_postdata = f'ikman_auto_finance_post_data_{timestamp}.csv'
 
 df=pd.read_csv(path)
 
@@ -28,7 +31,7 @@ with open(path_postdata, mode='a', newline='', encoding='utf-8') as file:
         writer.writeheader()
 
     # Iterate over the links
-    for link in tqdm(df['Link'][377:]):
+    for link in tqdm(df['Link'][2566:]):
         
         car_info = {
             "Post_Link": "0",
