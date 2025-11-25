@@ -15,10 +15,8 @@ options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-skip_makes=['honda','mahindra', 'daihatsu', 'hyundai', 'kia', 'bmw','mazda','micro','mitsubishi','nissan','perodua','suzuki','tata']
-
 # Read the CSV file containing URLs
-df = pd.read_csv('auto_finance_links.csv', skiprows=range(1, 1300))  # keeps the first row as header
+df = pd.read_csv('hrefs_list_flaresolverr', skiprows=range(1, 1300))  # keeps the first row as header
 
 all_data = []
 
@@ -26,10 +24,11 @@ all_data = []
 # Open the CSV file for writing
 with open('extracted_table_data.csv', mode='w', newline='', encoding='utf-8') as file:
     writer = csv.writer(file)
-    #writer.writerow(['Contact','Price','Make','Model','YOM','Mileage (km)','Gear','Fuel Type','Options','Engine (cc)'])  # Write header
+    writer.writerow(['Date','Contact','Price','Make','Model','YOM','Mileage (km)','Gear','Fuel Type','Options','Engine (cc)'])  # Write header
     # Initialize the progress bar for the current group
     for _, row in tqdm(df.iterrows(), total=len(df), desc=f"Processing URLs"):
         url = row['URL']
+        date = row['DATE']
         # Visit the URL
         driver.get(url)
         
@@ -57,6 +56,7 @@ with open('extracted_table_data.csv', mode='w', newline='', encoding='utf-8') as
                         data[key2] = value2
             
             writer.writerow([
+                date,
                 data.get('Contact', ''),
                 data.get('Price', ''),
                 data.get('Make', ''),

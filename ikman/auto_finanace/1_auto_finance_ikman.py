@@ -7,7 +7,9 @@ import time
 import csv
 import os
 
-path = os.path.join("data", "2025-06-05", "auto_finance_post_links.csv")
+timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M')  # e.g., '2025-11-20_13-52'
+filename = f'ikman_auto_finance_post_links_{timestamp}.csv'
+
 
 headers = {
     "User-Agent": "web-scrapping",
@@ -17,7 +19,7 @@ headers = {
 fieldnames = ["Link", "Page", "Transmission", "Fuel_Type"]
 
 # Open a file in append mode to save each record
-with open(path, mode="a", newline="", encoding="utf-8") as file:
+with open(filename, mode="a", newline="", encoding="utf-8") as file:
     writer = csv.DictWriter(file, fieldnames=fieldnames)
 
     # Check if the file is empty and write the header only once

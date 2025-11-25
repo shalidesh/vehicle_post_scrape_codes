@@ -2,18 +2,31 @@ import time
 import pandas as pd
 from tqdm import tqdm
 import os
+import pandas as pd
+from datetime import datetime
+import re
 import re
 
-file_path = os.path.join('data','2025-06-05','auto_finance_post_data.csv')
+# Currentyear
+current_year = datetime.now().year 
 
+file_path = os.path.join('ikman_auto_finance_post_data_2025-11-21_11-26.csv')
 dataset = pd.read_csv(file_path)
-
 dataset = dataset.dropna()
 
 dataset = dataset[dataset['Brand'] != '0']
 
-# Remove records with 'Negotiable' value in the 'Price' column
-dataset = dataset[['Brand','Model','Trim / Edition','Year of Manufacture','Transmission','Body type','Fuel type','Engine capacity','Mileage','Vehicle_Price']]
+
+
+# Extract date using regex and format
+def extract_date(raw):
+    match = re.search(r'Posted on (\d{1,2} \w{3})', raw)
+    if match:
+        date_str = match.group(1) + f' {current_year}'
+        return pd.to_datetime(date_str, format='%d %b %Y').strftime('%Y-%m-%d')
+    return None
+
+dataset = dataset[['Posted_Date','Brand','Model','Trim / Edition','Year of Manufacture','Transmission','Body type','Fuel type','Engine capacity','Mileage','Vehicle_Price']]
 
 # Extract only the numerical part of the 'Price' column, ignoring any additional text
 def extract_price(price):
@@ -42,6 +55,7 @@ dataset['Model'] = dataset['Model'].apply(clean_model_name)
 dataset['Vehicle_Price'] = dataset['Vehicle_Price'].apply(extract_price)
 dataset['Engine capacity'] = dataset['Engine capacity'].apply(extract_engine)
 dataset['Mileage'] = dataset['Mileage'].apply(extract_milage)
+dataset['Posted_Date'] = dataset['Posted_Date'].apply(extract_date)
 
 # Remove records with None values in the 'Price' column
 dataset = dataset.dropna(subset=['Vehicle_Price'])
@@ -58,14 +72,19 @@ dataset['Fuel type'] = dataset['Fuel type'].astype(str).str.upper()
 dataset['Engine capacity'] = dataset['Engine capacity'].astype(str)
 dataset['Mileage'] = dataset['Mileage'].astype(str)
 
-dataset.rename(columns={'Model': 'model', 
+
+dataset.rename(columns={'Posted_Date': 'date_posted',
+                        'Model': 'model', 
                         'Brand': 'brand', 
+                        'Mileage':'mileage_km',
                         'Year of Manufacture':'year',
                         'Fuel type': 'fuel_type', 
-                        'transmision': 'transmision', 
-                        'engine_capacity': 'engine_capacity', 
+                        'transmision': 'transmission', 
+                        'engine_capacity': 'engine_cc', 
                         'Vehicle_Price': 'vehicle_price'}, inplace=True)
 
-output_file_path = os.path.join('data','2025-06-05', f'transformed_table_data.csv')
-dataset.to_csv(output_file_path, index=False)
+timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M')  # e.g., '2025-11-20_13-52'
+filename = f'transformed_table_data_{timestamp}.csv'
+
+dataset.to_csv(filename, index=False)
 

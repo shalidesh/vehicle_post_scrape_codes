@@ -45,6 +45,8 @@ with open('hrefs_list.csv', mode='w', newline='', encoding='utf-8') as file:
                     soup = BeautifulSoup(driver.page_source, 'html.parser')
                     content_div = soup.find('div', id='content')
 
+                    print(soup)
+
                     pagination = soup.find('div', class_='pagination')
 
                     if pagination is None:
@@ -79,7 +81,7 @@ with open('hrefs_list.csv', mode='w', newline='', encoding='utf-8') as file:
 
                         try:
                             date_obj = pd.to_datetime(date_text)
-                            if date_obj < pd.Timestamp('2025-5-25'):
+                            if date_obj < pd.Timestamp('2025-11-01'):
                                 isHaveNextPage = False
                                 break
                         except ValueError:
